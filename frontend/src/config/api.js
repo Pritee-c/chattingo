@@ -1,23 +1,14 @@
-// Derive API base URL
-// 1) Prefer explicit env (REACT_APP_API_URL)
-// 2) If running on a non-localhost host, use current hostname with backend port 8080
-// 3) Fallback to localhost:8080 for local dev
-const deriveDefaultApiBaseUrl = () => {
-  try {
-    const { protocol, hostname } = window.location;
-    const isLocalhost = hostname === "localhost" || hostname === "127.0.0.1";
-    if (!isLocalhost && hostname) {
-      const scheme = protocol === "https:" ? "https:" : "http:";
-      return `${scheme}//${hostname}:8080`;
-    }
-  } catch (_) {
-    // window not available (e.g., tests) – ignore and use fallback
-  }
-  return "http://localhost:8080";
-};
+// src/config/api.js
 
-export const BASE_API_URL =
-  process.env.REACT_APP_API_URL && process.env.REACT_APP_API_URL.trim() !== ""
-    ? process.env.REACT_APP_API_URL
-    : deriveDefaultApiBaseUrl();
+if (!process.env.REACT_APP_API_URL || process.env.REACT_APP_API_URL.trim() === "") {
+  throw new Error(
+    "REACT_APP_API_URL is not defined! Set it in your .env file."
+  );
+}
+
+export const BASE_API_URL = process.env.REACT_APP_API_URL;
+export const WS_URL =
+  process.env.REACT_APP_WS_URL && process.env.REACT_APP_WS_URL.trim() !== ""
+    ? process.env.REACT_APP_WS_URL
+    : `${BASE_API_URL}/ws`;
 
